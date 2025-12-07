@@ -216,8 +216,8 @@
                 <button id="downloadBtn" style="display:none;" onclick="downloadJson()">Download JSON</button>
             </div>
             <p id="status"></p>
-            <!-- New: human-readable scrapedAt -->
             <p id="scrapedAtDisplay" style="margin:4px 0 0; font-size:0.85rem; color:#9ca3af;"></p>
+            <p id="currentUrlDisplay" style="margin:2px 0 8px; font-size:0.85rem; color:#9ca3af;"></p>
 
             <div class="two-column">
                 <div>
@@ -257,10 +257,15 @@
             const scrapeBtn = document.getElementById("scrapeBtn");
             const spinner = document.getElementById("spinner");
             const scrapedAtDisplay = document.getElementById("scrapedAtDisplay");
+            const currentUrlDisplay = document.getElementById("currentUrlDisplay");
 
             if (!url) {
                 alert("Please enter a URL");
                 return;
+            }
+
+            if (currentUrlDisplay) {
+                currentUrlDisplay.innerHTML = `<b>URL:</b> ${url}`;
             }
 
             statusEl.innerText = "Scraping… this may take a few seconds.";
@@ -268,6 +273,7 @@
             errorsEl.innerHTML = "";
             downloadBtn.style.display = "none";
             if (scrapedAtDisplay) scrapedAtDisplay.innerText = "";
+            if (currentUrlDisplay) currentUrlDisplay.innerText = "";
             lastResult = null;
 
             // Disable button while scraping
@@ -307,6 +313,7 @@
             const sectionsDiv = document.getElementById("sections");
             const sectionsCount = document.getElementById("sectionsCount");
             const scrapedAtDisplay = document.getElementById("scrapedAtDisplay");
+            const currentUrlDisplay = document.getElementById("currentUrlDisplay");
 
             // ScrapedAt: show human-readable value
             if (scrapedAtDisplay) {
@@ -325,6 +332,10 @@
                 scrapedAtDisplay.innerHTML = raw
                     ? `<b>Scraped at:</b> ${display}`
                     : "";
+            }
+
+            if (currentUrlDisplay) {
+                currentUrlDisplay.innerHTML = `<b>URL:</b> ${result.url}`;
             }
 
             // Meta
