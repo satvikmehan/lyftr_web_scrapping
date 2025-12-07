@@ -26,8 +26,6 @@ Start FastAPI on http://localhost:8000
 
 # Test URLs Used
 
-You can replace these with URLs you actually used, but here is a suggested list:
-
 Static page
 https://example.com
 
@@ -41,10 +39,6 @@ These demonstrate static scraping, JS fallback, scroll depth, and dynamic conten
 
 
 # Limitations 
-
-Does not implement pagination via next-page links (?page=2)
-
-Does not click tabs (role="tab") — only load-more flows
 
 Does not perform advanced noise removal (cookie banners, modals)
 
