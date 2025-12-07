@@ -1,0 +1,19 @@
+{
+  "static_scraping": true,
+  "js_rendering": true,
+  "click_load_more": true,
+  "click_tabs": true,
+  "scroll_depth": 3,
+  "pagination_links": true,
+  "semantic_section_extraction": true,
+  "raw_html_truncation": true,
+  "noise_filtering": "basic",
+  "infinite_scroll_support": true,
+  "interaction_logging": {
+    "scrolls": true,
+    "clicks": true,
+    "pages": true
+  },
+  "frontend_json_viewer": true,
+  "download_json_feature": true
+}

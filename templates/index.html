@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Universal Website Scraper (MVP)</title>
+    <style>
+        :root {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color-scheme: light dark;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page {
+            max-width: 960px;
+            width: 100%;
+            padding: 24px 16px 40px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            margin: 0 0 24px;
+            color: #9ca3af;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: #020617;
+            border-radius: 12px;
+            padding: 16px 18px 18px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.8);
+            border: 1px solid #1f2937;
+            margin-bottom: 16px;
+        }
+
+        .input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            flex: 1 1 260px;
+            min-width: 0;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"]::placeholder {
+            color: #6b7280;
+        }
+
+        button {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: #4f46e5;
+            color: white;
+            transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover:not(:disabled) {
+            background: #6366f1;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.6);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        #status {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #9ca3af;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .panel-body {
+            font-size: 0.9rem;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #111827;
+            font-size: 0.75rem;
+            margin-right: 6px;
+        }
+
+        .sections-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .sections-header h2 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        #sectionsCount {
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+
+        .section {
+            border-radius: 10px;
+            border: 1px solid #1f2937;
+            background: #020617;
+            margin-top: 10px;
+            padding: 10px 12px;
+        }
+
+        .label {
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .label span.badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #111827;
+            color: #9ca3af;
+        }
+
+        pre {
+            background: #020617;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            border: 1px solid #1f2937;
+        }
+
+        .error-banner {
+            margin-top: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: #7f1d1d;
+            color: #fee2e2;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 720px) {
+            .two-column {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <h1>Universal Website Scraper</h1>
+        <p class="subtitle">
+            Enter any <code>http(s)</code> URL to scrape its content. The backend will perform static scraping first,
+            then fall back to a JS-rendered view with Playwright if needed.
+        </p>
+
+        <div class="card">
+            <div class="input-row">
+                <input id="urlInput" type="text" placeholder="Enter URL (https://example.com)" />
+                <button id="scrapeBtn" onclick="startScrape()">
+                    <span>Scrape</span>
+                    <span id="spinner" style="display:none;">⏳</span>
+                </button>
+                <button id="downloadBtn" style="display:none;" onclick="downloadJson()">Download JSON</button>
+            </div>
+            <p id="status"></p>
+
+            <div class="two-column">
+                <div>
+                    <div class="panel-title">Meta</div>
+                    <div id="meta" class="panel-body">
+                        <span class="pill">No data yet</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="panel-title">Interactions</div>
+                    <div id="interactions" class="panel-body">
+                        <span class="pill">No scrape run</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="sections-header">
+                <h2>Sections</h2>
+                <div id="sectionsCount"></div>
+            </div>
+            <div id="sections"></div>
+            <div id="errors"></div>
+        </div>
+    </div>
+
+    <script>
+        let lastResult = null;
+
+        async function startScrape() {
+            const url = document.getElementById("urlInput").value.trim();
+            const statusEl = document.getElementById("status");
+            const sectionsEl = document.getElementById("sections");
+            const errorsEl = document.getElementById("errors");
+            const downloadBtn = document.getElementById("downloadBtn");
+            const scrapeBtn = document.getElementById("scrapeBtn");
+            const spinner = document.getElementById("spinner");
+
+            if (!url) {
+                alert("Please enter a URL");
+                return;
+            }
+
+            statusEl.innerText = "Scraping… this may take a few seconds.";
+            sectionsEl.innerHTML = "";
+            errorsEl.innerHTML = "";
+            downloadBtn.style.display = "none";
+            lastResult = null;
+
+            // Disable button while scraping
+            scrapeBtn.disabled = true;
+            spinner.style.display = "inline";
+
+            try {
+                const response = await fetch("/scrape", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+                lastResult = data;
+
+                statusEl.innerText = "";
+                renderSections(data.result);
+                downloadBtn.style.display = "inline-block";
+
+                if (data.result.errors && data.result.errors.length > 0) {
+                    const msg = data.result.errors.map(e => e.message).join(" | ");
+                    errorsEl.innerHTML = `<div class="error-banner">Some issues occurred while scraping: ${msg}</div>`;
+                }
+            } catch (err) {
+                console.error(err);
+                statusEl.innerText = "Error while scraping. See console for details.";
+            } finally {
+                scrapeBtn.disabled = false;
+                spinner.style.display = "none";
+            }
+        }
+
+        function renderSections(result) {
+            const metaDiv = document.getElementById("meta");
+            const interactionsDiv = document.getElementById("interactions");
+            const sectionsDiv = document.getElementById("sections");
+            const sectionsCount = document.getElementById("sectionsCount");
+
+            // Meta
+            metaDiv.innerHTML = `
+                <p><b>Title:</b> ${result.meta.title || "<i>(none)</i>"}</p>
+                <p><b>Description:</b> ${result.meta.description || "<i>(none)</i>"}</p>
+                <p><b>Language:</b> ${result.meta.language || "<i>(unknown)</i>"}</p>
+                <p><b>Canonical:</b> ${result.meta.canonical || "<i>(none)</i>"}</p>
+            `;
+
+            // Interactions
+            const clicks = result.interactions?.clicks || [];
+            const scrolls = result.interactions?.scrolls ?? 0;
+            const pages = result.interactions?.pages || [];
+
+            interactionsDiv.innerHTML = `
+                <p><b>Scrolls:</b> ${scrolls}</p>
+                <p><b>Clicks:</b> ${clicks.length} ${clicks.length ? "(" + clicks.join(", ") + ")" : ""}</p>
+                <p><b>Pages visited:</b> ${pages.length ? pages.join(", ") : "<i>none</i>"}</p>
+            `;
+
+            // Sections list
+            sectionsDiv.innerHTML = "";
+            sectionsCount.innerText = `${result.sections.length} section(s) found`;
+
+            result.sections.forEach((section, index) => {
+                const div = document.createElement("div");
+                div.className = "section";
+
+                const header = document.createElement("div");
+                header.className = "label";
+                header.innerHTML = `
+                    <span>${index + 1}. ${section.label}</span>
+                    <span class="badge">${section.type}</span>
+                `;
+                div.appendChild(header);
+
+                const pre = document.createElement("pre");
+                pre.style.display = "none";
+                pre.innerText = JSON.stringify(section, null, 2);
+                div.appendChild(pre);
+
+                header.onclick = () => {
+                    pre.style.display = pre.style.display === "none" ? "block" : "none";
+                };
+
+                sectionsDiv.appendChild(div);
+            });
+        }
+
+        function downloadJson() {
+            if (!lastResult) return;
+            const jsonStr = JSON.stringify(lastResult, null, 2);
+            const blob = new Blob([jsonStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "scrape_result.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
