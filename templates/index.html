@@ -216,6 +216,8 @@
                 <button id="downloadBtn" style="display:none;" onclick="downloadJson()">Download JSON</button>
             </div>
             <p id="status"></p>
+            <!-- New: human-readable scrapedAt -->
+            <p id="scrapedAtDisplay" style="margin:4px 0 0; font-size:0.85rem; color:#9ca3af;"></p>
 
             <div class="two-column">
                 <div>
@@ -254,6 +256,7 @@
             const downloadBtn = document.getElementById("downloadBtn");
             const scrapeBtn = document.getElementById("scrapeBtn");
             const spinner = document.getElementById("spinner");
+            const scrapedAtDisplay = document.getElementById("scrapedAtDisplay");
 
             if (!url) {
                 alert("Please enter a URL");
@@ -264,6 +267,7 @@
             sectionsEl.innerHTML = "";
             errorsEl.innerHTML = "";
             downloadBtn.style.display = "none";
+            if (scrapedAtDisplay) scrapedAtDisplay.innerText = "";
             lastResult = null;
 
             // Disable button while scraping
@@ -302,6 +306,26 @@
             const interactionsDiv = document.getElementById("interactions");
             const sectionsDiv = document.getElementById("sections");
             const sectionsCount = document.getElementById("sectionsCount");
+            const scrapedAtDisplay = document.getElementById("scrapedAtDisplay");
+
+            // ScrapedAt: show human-readable value
+            if (scrapedAtDisplay) {
+                const raw = result.scrapedAt;
+                let display = raw || "";
+                if (raw) {
+                    try {
+                        const d = new Date(raw);
+                        if (!isNaN(d.getTime())) {
+                            display = d.toLocaleString();
+                        }
+                    } catch (e) {
+                        // fallback to raw if parsing fails
+                    }
+                }
+                scrapedAtDisplay.innerHTML = raw
+                    ? `<b>Scraped at:</b> ${display}`
+                    : "";
+            }
 
             // Meta
             metaDiv.innerHTML = `
