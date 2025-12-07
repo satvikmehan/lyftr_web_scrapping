@@ -5,8 +5,9 @@
   "click_tabs": true,
   "scroll_depth": 3,
   "pagination_links": true,
+  "html_truncation": true,
+  "error_reporting": true,
   "semantic_section_extraction": true,
-  "raw_html_truncation": true,
   "noise_filtering": "basic",
   "infinite_scroll_support": true,
   "interaction_logging": {
